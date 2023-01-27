@@ -1,0 +1,99 @@
+{% extends 'includes/base.html' %}
+{% load static %}
+{% block content %}
+<!-- Breadcrumb Section Begin -->
+<section class="breadcrumb-option">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="breadcrumb__text">
+					<h4>Products</h4>
+					<div class="breadcrumb__links">
+						<a href="{% url 'home' %}">Home</a>
+						<span>Products</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+ </section>
+ <!-- Breadcrumb Section End -->
+
+<main class="container my-4">
+	<div class="row">
+		<!-- Filters -->
+		<div class="col-md-3">
+			{% include 'filters.html' %}
+		</div>
+		<div class="col-md-9">
+			<!-- Products -->
+			<h3 class="mb-4 border-bottom pb-1">
+				Products
+			</h3>
+			<div class="row" id="filteredProducts">
+				<p class="ajaxLoader">Loading...</p>
+				{% for product in data %}
+				
+				<div class="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mix">
+				<div class="product__item">
+					<div class="product__item__pic set-bg" data-setbg="{{product.productattribute_set.first.image.url}}">
+						
+						{% if product.productattribute_set.first.sell_price != product.productattribute_set.first.price %}
+						<span class="label">Sale</span>
+						{% else %}
+						{% endif %}
+						<ul class="product__hover">
+							{% if user.is_authenticated %}
+							<li><a href="#"><img src="{% static 'media/images/icons/heart.png' %}" alt=""></a></li>
+							{% else %}
+							{% endif %}
+							<li><a href="/product/{{product.slug}}/{{product.id}}"><img src="{% static 'media/images/icons/search.png' %}" alt=""></a></li>
+						</ul>
+					</div>
+					<div class="product__item__text">
+						<h6 style="font-size: 12px; color: rgb(147, 147, 147);">{{product.category|upper}}</h6>
+						<h6>{{product.title}}</h6>
+										
+						<input type="hidden" value="1" class="form-control product-qty-{{product.id}}" id="productQty" />
+						<input type="hidden" class="product-image-{{product.id}}" value="{{product.productattribute_set.first.image}}" />
+						<input type="hidden" class="product-id-{{product.id}}" value="{{product.id}}" />
+						<input type="hidden" class="product-title-{{product.id}}" value="{{product.title}}" />
+						<a href="/" class="add-cart add-to-cart" data-index="{{product.id}}">+ Add To Cart</a>
+						<div class="rating">
+							<i class="fa fa-star-o"></i>
+							<i class="fa fa-star-o"></i>
+							<i class="fa fa-star-o"></i>
+							<i class="fa fa-star-o"></i>
+							<i class="fa fa-star-o"></i>
+						</div>
+						{% if product.productattribute_set.first.sell_price == product.productattribute_set.first.price %}
+						<h5>$<span class="product-price-{{data.id}}">{{product.productattribute_set.first.sell_price}}</span></h5>
+						{% else %}
+						<h5>$<span class="product-price-{{data.id}}">{{product.productattribute_set.first.sell_price}}</span> <span style="text-decoration:line-through; font-size: 15px; color: rgb(138, 135, 135);" >{{product.productattribute_set.first.price}}</span></h5>
+						{% endif %}
+	
+						<div class="product__color__select">
+							{% for color in product.productattribute_set.all %}
+								<label class="choose-color" data-color="{{color.id}}" style="background-color: {{color.color.color_code}}" for="sp-1">
+									<input type="radio" id="">
+								</label>
+							{% endfor %}
+							<div class="product__size__select">  
+								{% for size in product.productattribute_set.all %}
+								<label class="choose-size color{{size.color_id}}" data-size="{{size.size_id}}" data-price="{{size.price}}" data-discount="{{size.discount}}" data-image="{{size.image}}" for="{{size.size.size_code}}}">{{size.size.size_code}}
+									<input type="radio" id="{{size.size.size_code}}">
+								</label>
+								{% endfor %}
+				
+								</div>
+							</div>
+						</div>
+					</div>
+				</div> 
+				{% endfor %}
+			</div>
+			<p class="my-4 text-center"><button id="loadMore" data-total="{{total_data}}" data-limit="3" class="btn btn-dark btn-sm">Load More <i class="fa fa-sync load-more-icon"></i></button></p>
+		</div>
+	</div>
+</main>
+{% endblock %}
